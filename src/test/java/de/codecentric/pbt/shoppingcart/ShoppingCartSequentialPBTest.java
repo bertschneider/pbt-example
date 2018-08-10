@@ -34,7 +34,6 @@ class ShoppingCartSequentialPBTest {
                 .ofSizeBetween(0, 10);
 
         qt()
-                .withExamples(5000)
                 .forAll(commandSequences)
                 .checkAssert((commands) ->
                         Sequential.modelCheck(euro(0), commands,

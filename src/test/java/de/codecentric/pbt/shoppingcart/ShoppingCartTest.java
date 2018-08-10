@@ -45,11 +45,11 @@ class ShoppingCartTest {
     }
 
     @Test
-    void addingTheSameItemMultipleTimesResetsTheCostToTheSecondAmount() {
+    void addingTheSameItemMultipleTimesAddsTheAmounts() {
         Item someItem = new Item("Some Item", euro(1));
         shoppingCart.add(someItem, 1);
         shoppingCart.add(someItem, 5);
-        assertThat(shoppingCart.cost(), is(euro(5)));
+        assertThat(shoppingCart.cost(), is(euro(6)));
     }
 
     @Test

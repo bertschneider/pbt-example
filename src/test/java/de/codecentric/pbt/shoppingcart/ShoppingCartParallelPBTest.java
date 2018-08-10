@@ -11,6 +11,7 @@ import org.quicktheories.core.stateful.Parallel;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static de.codecentric.pbt.shoppingcart.gen.CommandGen.addCommands;
 import static de.codecentric.pbt.shoppingcart.gen.CommandGen.resetCommands;
@@ -20,6 +21,8 @@ import static org.quicktheories.QuickTheory.qt;
 import static org.quicktheories.generators.SourceDSL.lists;
 
 class ShoppingCartParallelPBTest {
+
+    private static final Logger log = Logger.getLogger(ShoppingCart.class.getName());
 
     private Stopwatch stopwatch;
 
@@ -31,7 +34,7 @@ class ShoppingCartParallelPBTest {
     @AfterEach
     void tearDown() {
         stopwatch.stop();
-        System.out.println(format("Time: %s ms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
+        log.info(format("Time: %s ms", stopwatch.elapsed(TimeUnit.MILLISECONDS)));
     }
 
     @Test
@@ -40,8 +43,8 @@ class ShoppingCartParallelPBTest {
         Parallel parallel = new Parallel(100, TimeUnit.MILLISECONDS);
 
         Gen<List<Command<ShoppingCart, Money>>> commandSequences = lists()
-                .of(addCommands().mix(resetCommands()))
-                .ofSize(4);
+                .of(addCommands().mix(resetCommands(), 10))
+                .ofSize(5);
 
         qt()
                 .withShrinkCycles(100)

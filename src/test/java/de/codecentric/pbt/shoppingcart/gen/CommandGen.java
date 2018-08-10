@@ -17,7 +17,7 @@ public class CommandGen {
 
     public static Gen<Command<ShoppingCart, Money>> generateCommand(BiFunction<Item, Integer, Command<ShoppingCart, Money>> gen) {
         Gen<Item> items = items();
-        Gen<Integer> amounts = integers().allPositive();
+        Gen<Integer> amounts = integers().between(1, 100);
         return items.zip(amounts, gen);
     }
 
