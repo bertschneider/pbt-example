@@ -22,7 +22,7 @@ public class CounterPBT implements WithQuickTheories {
         qt()
                 .forAll(longs().between(0, 10), commandSequences)
                 .checkAssert((initialState, commands) -> Sequential.modelCheck(
-                        initialState, commands, BuggyCounter::new, Counter::get));
+                        initialState, commands, NotThreadSafeCounter::new, Counter::get));
     }
 
     @Test
@@ -121,7 +121,6 @@ public class CounterPBT implements WithQuickTheories {
         void reset();
     }
 
-
     class NotThreadSafeCounter implements Counter {
 
         private long n;
@@ -140,41 +139,6 @@ public class CounterPBT implements WithQuickTheories {
 
         public void inc() {
             n = n + 1;
-        }
-
-        public long get() {
-            return n;
-        }
-
-        public void reset() {
-            n = 0;
-        }
-    }
-
-    class BuggyCounter implements Counter {
-
-        private long n;
-        private int count;
-
-        BuggyCounter(long start) {
-            n = start;
-            count = 0;
-        }
-
-        public void dec() {
-            n = n - 1;
-            count = count + 1;
-        }
-
-        public void doubleIt() {
-            n = n * 2;
-        }
-
-        public void inc() {
-            if (count != 3) {
-                n = n + 1;
-            }
-            count = count + 1;
         }
 
         public long get() {

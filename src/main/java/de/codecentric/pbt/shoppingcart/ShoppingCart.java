@@ -5,7 +5,7 @@ import org.javamoney.moneta.Money;
 import java.util.HashMap;
 import java.util.Map;
 
-import static de.codecentric.pbt.shoppingcart.Euro.euro;
+import static de.codecentric.pbt.shoppingcart.util.Euro.euro;
 
 public class ShoppingCart {
 
@@ -18,18 +18,29 @@ public class ShoppingCart {
     }
 
     public void add(Item item, int amount) {
-        lineItems.put(item, createLineItem(item, amount));
+        lineItems.put(item, new LineItem(item, amount));
     }
 
-    private LineItem createLineItem(Item item, int amount) {
-        if (lineItems.containsKey(item)) {
-            return new LineItem(item, lineItems.get(item).getAmount() + amount);
-        } else {
-            return new LineItem(item, amount);
+    public void remove(Item item, int amount) {
+        LineItem lineItem = lineItems.get(item);
+        if (lineItem != null) {
+            int lineItemAmount = lineItem.getAmount();
+            if (lineItemAmount > amount) {
+                lineItems.put(item, new LineItem(item, lineItemAmount - amount));
+            } else {
+                lineItems.remove(item);
+            }
         }
     }
 
-    public int distinctItemCount() {
-        return lineItems.keySet().size();
+    public void reset() {
+        lineItems.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingCart{" +
+                "lineItems=" + lineItems +
+                '}';
     }
 }

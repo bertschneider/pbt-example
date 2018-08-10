@@ -3,7 +3,7 @@ package de.codecentric.pbt.shoppingcart;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static de.codecentric.pbt.shoppingcart.Euro.euro;
+import static de.codecentric.pbt.shoppingcart.util.Euro.euro;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -16,7 +16,7 @@ class ShoppingCartTest {
         shoppingCart = new ShoppingCart();
     }
 
-    // ------ Cost ------
+    // ------ Adding item cost ------
 
     @Test
     void newShoppingCartHasNoCost() {
@@ -45,32 +45,52 @@ class ShoppingCartTest {
     }
 
     @Test
-    void addingTheSameItemMultipleTimesIncreasesTheCostBasedOnBothTimes() {
-        shoppingCart.add(new Item("Some Item", euro(1)), 1);
-        shoppingCart.add(new Item("Some Item", euro(1)), 4);
+    void addingTheSameItemMultipleTimesResetsTheCostToTheSecondAmount() {
+        Item someItem = new Item("Some Item", euro(1));
+        shoppingCart.add(someItem, 1);
+        shoppingCart.add(someItem, 5);
         assertThat(shoppingCart.cost(), is(euro(5)));
     }
-    
-    // ------ LineItem count ------
 
     @Test
-    void addingAnItemIncreasesTheAmountOfDistinctItems() {
-        shoppingCart.add(new Item("Some Item", euro(2)), 1);
-        assertThat(shoppingCart.distinctItemCount(), is(1));
+    void addingAnItemToTheShoppingCartAddsAtLeastOneItem() {
+        Item item = new Item("Some Item", euro(1));
+        shoppingCart.add(item, -1);
+        assertThat(shoppingCart.cost(), is(euro(1)));
+    }
+
+    // ------ Removing item cost ---
+
+    @Test
+    void removingAnItemLowersTheCostBasedOnTheItemAmount() {
+        Item someItem = new Item("Some Item", euro(10));
+        shoppingCart.add(someItem, 10);
+        shoppingCart.remove(someItem, 5);
+        assertThat(shoppingCart.cost(), is(euro(50)));
     }
 
     @Test
-    void addingMultipleItemsIncreasesTheAmountOfDistinctItemsEqually() {
+    void removingMoreAmountOfAnItemAsPresentRemovesAllCostsOfTheItem() {
+        Item someItem = new Item("Some Item", euro(10));
+        shoppingCart.add(someItem, 1);
+        shoppingCart.remove(someItem, 2);
+        assertThat(shoppingCart.cost(), is(euro(0)));
+    }
+
+    @Test
+    void removingAnUnknownItemDoesNothing() {
+        shoppingCart.add(new Item("Some Item", euro(10)), 10);
+        shoppingCart.remove(new Item("Some other Item", euro(10)), 5);
+        assertThat(shoppingCart.cost(), is(euro(100)));
+    }
+
+    // ------ Reset ------
+
+    @Test
+    void resetEmptiesTheShoppingCart() {
         shoppingCart.add(new Item("First Item", euro(1)), 1);
         shoppingCart.add(new Item("Second Item", euro(2)), 2);
-        assertThat(shoppingCart.distinctItemCount(), is(2));
+        shoppingCart.reset();
+        assertThat(shoppingCart.cost(), is(euro(0)));
     }
-
-    @Test
-    void addingTheSameItemAgainDoesNotIncreasesTheAmountOfDistinctItems() {
-        shoppingCart.add(new Item("Item", euro(1)), 1);
-        shoppingCart.add(new Item("Item", euro(1)), 2);
-        assertThat(shoppingCart.distinctItemCount(), is(1));
-    }
-    
 }

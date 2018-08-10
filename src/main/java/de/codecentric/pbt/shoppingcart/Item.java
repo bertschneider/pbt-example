@@ -4,6 +4,9 @@ import org.javamoney.moneta.Money;
 
 import java.util.Objects;
 
+import static de.codecentric.pbt.shoppingcart.util.Euro.ZERO_EUR;
+
+
 public class Item {
 
     private final String name;
@@ -11,7 +14,7 @@ public class Item {
 
     public Item(String name, Money cost) {
         this.name = name;
-        this.cost = cost;
+        this.cost = cost.isLessThan(ZERO_EUR) ? ZERO_EUR : cost;
     }
 
     public Money getCost() {

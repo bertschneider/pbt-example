@@ -11,7 +11,7 @@ class LineItem {
 
     public LineItem(Item item, int amount) {
         this.item = item;
-        this.amount = amount;
+        this.amount = amount > 0 ? amount : 1;
     }
 
     public Money cost() {
